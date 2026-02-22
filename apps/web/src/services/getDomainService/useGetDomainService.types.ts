@@ -2,6 +2,17 @@ import { ApiResponse } from "@repo/common/types";
 
 export type ApiDomainStatus = "ACTIVE" | "INACTIVE" | "PAUSED";
 
+export type TDomainStatusUpdateResponse = {
+  data: {
+    name: string;
+    status: ApiDomainStatus;
+
+    updatedAt: Date;
+  };
+  message: string;
+  status: number;
+};
+
 export interface IDomainType {
   id: string;
   clientId: string;

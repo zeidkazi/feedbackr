@@ -12,6 +12,7 @@ const useGetFeedbackService = ({ domainId }: { domainId: string }) => {
         url: API_URLS?.FEEDBACK,
         searchParams: { domainId: domainId },
       }),
+    refetchOnMount: "always",
     enabled: !!domainId,
   });
 
