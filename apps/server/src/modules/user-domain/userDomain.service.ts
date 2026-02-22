@@ -51,6 +51,9 @@ export const UserDomainService = {
       where: {
         userId,
       },
+      omit: {
+        clientId: true,
+      },
       include: {
         _count: {
           select: { feedback: true },

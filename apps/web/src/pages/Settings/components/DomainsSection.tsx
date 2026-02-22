@@ -12,13 +12,13 @@ import {
   Label,
   Switch,
 } from "@repo/ui";
-import { Check, ChevronDown, Copy, Globe, Plus } from "lucide-react";
+import { Check, ChevronDown, Copy, Eye, Globe, Plus } from "lucide-react";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 interface DomainsSectionProps {
   domains: IDomainType[];
   selectedDomain: IDomainType | undefined;
-  setSelectedDomainId: (id: string) => void;
   onStatusChange: (id: string, checked: boolean) => void;
   copyToClipboard: (text: string, label: string) => void;
 }
@@ -26,16 +26,14 @@ interface DomainsSectionProps {
 export const DomainsSection = ({
   domains,
   selectedDomain,
-  setSelectedDomainId,
   onStatusChange,
   copyToClipboard,
 }: DomainsSectionProps) => {
+  const navigate = useNavigate();
   const clientId = selectedDomain?.clientId || "";
   const embedSnippet = selectedDomain
     ? `<script src="https://cdn.feedbackwidget.io/v1/widget.js" data-client-id="${selectedDomain.clientId}"></script>`
     : "";
-
-  const isActive = selectedDomain?.status === "ACTIVE";
 
   return (
     <section className="space-y-6">
@@ -91,7 +89,9 @@ export const DomainsSection = ({
                           isSelected &&
                             "bg-secondary! text-primary! [&_svg]:text-primary!",
                         )}
-                        onClick={() => setSelectedDomainId(domain.id)}
+                        onClick={() =>
+                          navigate(`/dashboard/${domain?.id}/settings`)
+                        }
                       >
                         <div className="flex justify-between w-full items-center">
                           <div className="flex items-center gap-x-2">
@@ -139,10 +139,11 @@ export const DomainsSection = ({
                 </p>
               </div>
               <Switch
-                checked={isActive}
-                onCheckedChange={(checked) =>
-                  onStatusChange(selectedDomain.id, checked)
-                }
+                checked={selectedDomain?.status === "ACTIVE"}
+                onCheckedChange={(checked) => {
+                  console.log("switch", checked);
+                  onStatusChange(selectedDomain.id, checked);
+                }}
               />
             </div>
 
@@ -150,7 +151,7 @@ export const DomainsSection = ({
               <Label className="text-xs text-foreground">Client ID</Label>
               <div className="flex gap-2">
                 <Input
-                  value={clientId}
+                  value={"pk_**************** "}
                   readOnly
                   className="h-9 text-sm font-mono bg-muted/50 text-muted-foreground"
                 />
@@ -158,10 +159,10 @@ export const DomainsSection = ({
                   variant="outline"
                   size="sm"
                   className="h-9 text-xs gap-1.5 min-w-20"
-                  onClick={() => copyToClipboard(clientId, "Client ID")}
+                  onClick={() => {}}
                 >
-                  <Copy className="h-3.5 w-3.5" />
-                  Copy
+                  <Eye className="h-3.5 w-3.5" />
+                  View
                 </Button>
               </div>
             </div>

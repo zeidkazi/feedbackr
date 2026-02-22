@@ -8,6 +8,7 @@ const useGetDomainService = () => {
   const getDomainService = useQuery<IGetDomainsResponse>({
     queryKey: [CACHE_KEYS?.GET_DOMAINS],
     queryFn: () => handleGlobalGetRequestQuery({ url: API_URLS?.DOMAIN }),
+    refetchOnMount: "always",
   });
 
   return {
