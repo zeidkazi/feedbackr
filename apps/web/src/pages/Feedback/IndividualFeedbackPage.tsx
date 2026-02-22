@@ -13,6 +13,7 @@ import { FeedbackDeleteSection } from "./components/FeedbackDeleteSection.tsx";
 import { PriorityFilter } from "./components/PriorityFilter.tsx";
 import { StatusFilter } from "./components/StatusFilter.tsx";
 import { DebugSection } from "./components/diagnostic/DebugSection.tsx";
+import { Skeleton } from "@repo/ui";
 
 export const IndividualFeedbackPage = () => {
   const { domainId, feedbackId } = useParams<{
@@ -150,7 +151,13 @@ export const IndividualFeedbackPage = () => {
                 className=""
                 variant="alert"
               />
-              <DebugSection />
+              {getIndividualFeedbackService.data &&
+              Object.keys(getIndividualFeedbackService.data?.data?.debugContext)
+                .length > 0 ? (
+                <DebugSection data={getIndividualFeedbackService.data} />
+              ) : (
+                <Skeleton className="bg-muted h-[50px] w-full rounded-lg" />
+              )}
             </div>
           </div>
         </SectionLayout>

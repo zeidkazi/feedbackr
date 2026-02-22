@@ -1,3 +1,4 @@
+import { IIndividualFeedbackResponse } from "@/services/getIndividualFeedbackService/useGetIndividualFeedbackService.types.ts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@repo/ui";
 import { Globe, Terminal } from "lucide-react";
 import {
@@ -9,7 +10,74 @@ import {
   DebugTitle,
 } from "./DebugContent.tsx";
 
-export const DebugSection = () => {
+const TYPE_MAPPER: Record<string, { name: string; description: string }> = {
+  type_error: {
+    name: "Type Errors",
+    description: "These are caused by invalid value types passed",
+  },
+  reference_error: {
+    name: "Reference Errors",
+    description: "These are reference errors ",
+  },
+  promise: {
+    name: "Promise Errors",
+    description: "There are promise failed errors",
+  },
+};
+
+const NETWORK_FIELD_MAPPER: Record<
+  string,
+  { name: string; description: string }
+> = {
+  url: {
+    name: "Request URL",
+    description: "The full URL the request was sent to.",
+  },
+  method: {
+    name: "HTTP Method",
+    description: "The HTTP verb used for this request (GET, POST, etc.).",
+  },
+  status: {
+    name: "Status Code",
+    description: "The HTTP response status code returned by the server.",
+  },
+  statusText: {
+    name: "Status Text",
+    description: "The human-readable status text from the response.",
+  },
+  requestHeaders: {
+    name: "Request Headers",
+    description: "All HTTP headers that were sent along with the request.",
+  },
+  responseHeaders: {
+    name: "Response Headers",
+    description: "All HTTP headers returned from the server.",
+  },
+  payload: {
+    name: "Request Payload",
+    description: "The body sent with the request (e.g., JSON payload).",
+  },
+  responseBody: {
+    name: "Response Body",
+    description: "The body returned by the server for this request.",
+  },
+  duration: {
+    name: "Duration",
+    description: "How long the request took from start to finish (ms).",
+  },
+  error: {
+    name: "Error",
+    description: "Any error captured for this network request.",
+  },
+};
+
+export const DebugSection = ({
+  data,
+}: {
+  data: IIndividualFeedbackResponse;
+}) => {
+  const debugContext = data?.data?.debugContext ?? null;
+
   return (
     <>
       <div className="relative flex-1 w-full rounded-xl bg-muted bg-[#0b0b0b]_ border border-white/5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] overflow-hidden">
@@ -25,14 +93,14 @@ export const DebugSection = () => {
             <TabsList variant="line">
               <TabsTrigger
                 value="console"
-                className="text-neutral-600! after:bg-foreground! font-normal tracking-tight after:h-[2.5px]!"
+                className="text-neutral-600! after:bg-neutral-500! font-normal tracking-tight after:h-[2.5px]!"
               >
                 <Terminal size={16} />
                 Console
               </TabsTrigger>
               <TabsTrigger
                 value="network"
-                className="text-neutral-600! after:bg-foreground! font-normal tracking-tight after:h-[2.5px]!"
+                className="text-neutral-600! after:bg-neutral-500! font-normal tracking-tight after:h-[2.5px]!"
               >
                 <Globe />
                 Network
@@ -40,94 +108,88 @@ export const DebugSection = () => {
             </TabsList>
             <div className="border border-border rounded-lg mt-2 mb-6">
               <TabsContent value="console">
-                <DebugContent className="">
-                  <DebugLeftSide>
-                    <DebugTitle>Type errors</DebugTitle>
-                    <DebugDescription>
-                      These are caused by invalid value types passed
-                    </DebugDescription>
-                  </DebugLeftSide>
-                  <DebugRightSide className="min-w-0">
-                    <CodeSnippet theme={"min-light"}>
-                      Uncaught TypeError: Cannot read properties of undefined
-                      (reading 'map') at FeedbackList.tsx:42:18 at
-                      renderWithHooks (react-dom.development.js:16305:18) at
-                      mountIndeterminateComponent
-                      (react-dom.development.js:20074:13)
-                    </CodeSnippet>
-                  </DebugRightSide>
-                </DebugContent>
-                <DebugContent className="">
-                  <DebugLeftSide>
-                    <DebugTitle>API Errors</DebugTitle>
-                    <DebugDescription>
-                      These are the server returned response errors
-                    </DebugDescription>
-                  </DebugLeftSide>
-                  <DebugRightSide className="w-full min-w-0">
-                    <CodeSnippet variant="dark" theme={"slack-dark"}>
-                      POST https://api.feedbackr.dev/v1/feedback 500 (Internal
-                      Server Error)
-                    </CodeSnippet>
-                  </DebugRightSide>
-                </DebugContent>
+                {debugContext && debugContext?.errors.length > 0 ? (
+                  debugContext.errors.map((error, idx) => {
+                    return (
+                      <DebugContent key={idx} className="">
+                        <DebugLeftSide>
+                          <DebugTitle>
+                            {TYPE_MAPPER[error.type]?.name ?? "Unknown Error"}
+                          </DebugTitle>
+                          <DebugDescription>
+                            {TYPE_MAPPER[error.type]?.description ??
+                              "An error occurred but its type is not mapped."}
+                          </DebugDescription>
+                        </DebugLeftSide>
+                        <DebugRightSide className="min-w-0">
+                          <CodeSnippet variant="dark" theme={"slack-dark"}>
+                            {error.error}
+                          </CodeSnippet>
+                        </DebugRightSide>
+                      </DebugContent>
+                    );
+                  })
+                ) : (
+                  <DebugContent>
+                    <DebugLeftSide>
+                      <DebugTitle>No Errors</DebugTitle>
+                      <DebugDescription>
+                        We could not capture any client side errors.
+                      </DebugDescription>
+                    </DebugLeftSide>
+                    <DebugRightSide className="w-full min-w-0">
+                      <CodeSnippet variant="dark" theme="slack-dark">
+                        {"// No errors recorded"}
+                      </CodeSnippet>
+                    </DebugRightSide>
+                  </DebugContent>
+                )}
               </TabsContent>
               <TabsContent value="network">
-                <DebugContent>Make changes to your account here.</DebugContent>
+                {debugContext && debugContext.network.length > 0 ? (
+                  debugContext.network.map((networkUnit, idx) =>
+                    Object.entries(networkUnit).map(([key, value]) => (
+                      <DebugContent key={idx}>
+                        <DebugLeftSide>
+                          <DebugTitle>
+                            {NETWORK_FIELD_MAPPER[key]?.name}
+                          </DebugTitle>
+                          <DebugDescription>
+                            {NETWORK_FIELD_MAPPER[key]?.description}
+                          </DebugDescription>
+                        </DebugLeftSide>
+
+                        <DebugRightSide className="w-full min-w-0">
+                          <CodeSnippet variant="dark" theme="slack-dark">
+                            {typeof value === "string"
+                              ? value
+                              : JSON.stringify(value, null, 2)}
+                          </CodeSnippet>
+                        </DebugRightSide>
+                      </DebugContent>
+                    )),
+                  )
+                ) : (
+                  <DebugContent>
+                    <DebugLeftSide>
+                      <DebugTitle>No network calls</DebugTitle>
+                      <DebugDescription>
+                        We could not capture any network activity for this
+                        session.
+                      </DebugDescription>
+                    </DebugLeftSide>
+                    <DebugRightSide className="w-full min-w-0">
+                      <CodeSnippet variant="dark" theme="slack-dark">
+                        {"// No requests recorded"}
+                      </CodeSnippet>
+                    </DebugRightSide>
+                  </DebugContent>
+                )}
               </TabsContent>
             </div>
           </Tabs>
         </div>
       </div>
-      {/* <div className="relative flex-1 w-full rounded-xl bg-[#0b0b0b] border border-white/5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.02)] overflow-hidden">
-        <div className="h-full overflow-y-auto px-4 py-3 font-mono text-xs leading-relaxed space-y-3 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-neutral-400">
-              <Terminal size={16} />
-              <span>Console Output</span>
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-red-500">
-                ▶ Uncaught TypeError: Cannot read property 'submit' of null
-              </p>
-              <p className="text-red-500">
-                ▶ Failed to load resource: net::ERR_CONNECTION_REFUSED
-              </p>
-            </div>
-          </div>
-
-          <div className="h-px bg-white/5 my-2" />
-
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-neutral-400">
-              <span>{"</>"}</span>
-              <span>Network Interaction</span>
-            </div>
-
-            <p className="text-emerald-400">POST /api/v1/auth/login 200 OK</p>
-
-            <p className="text-sky-400 underline underline-offset-2 cursor-pointer">
-              Request Payload:
-            </p>
-            <pre className="text-neutral-200 pl-3">
-              {`{
-      "email": "user@example.com",
-      "password": "****"
-    }`}
-            </pre>
-
-            <p className="text-sky-400 underline underline-offset-2 cursor-pointer">
-              Response Payload:
-            </p>
-            <pre className="text-neutral-200 pl-3">
-              {`{
-      "error": "Authentication failed"
-    }`}
-            </pre>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };

@@ -19,3 +19,4 @@ export * from "./ui/switch";
 export * from "./ui/dialog";
 export * from "./ui/textarea";
 export * from "./ui/tabs";
+export * from "./ui/skeleton";

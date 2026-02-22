@@ -4,7 +4,23 @@ interface IClientContext {
 }
 
 interface IDebugContext {
-  logs: any[];
+  errors: [
+    {
+      type: string;
+      error: string;
+      stackTrace: string;
+    },
+  ];
+  network: [
+    {
+      url: string;
+      method: string;
+      payload: Record<string, any>;
+      response: any;
+      status: number | string;
+      duration: string;
+    },
+  ];
 }
 
 interface IDomain {

@@ -22,8 +22,14 @@ export const DebugContent = ({
     </section>
   );
 };
-export const DebugTitle = ({ children }: { children: React.ReactNode }) => {
-  return <h1 className="text-sm">{children}</h1>;
+export const DebugTitle = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return <h1 className={cn(`text-sm capitalize`, className)}>{children}</h1>;
 };
 export const DebugDescription = ({
   children,
