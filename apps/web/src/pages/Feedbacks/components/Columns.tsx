@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils.ts";
 import { FeedbackDeleteSection } from "@/pages/Feedback/components/FeedbackDeleteSection.tsx";
 import { IFeedback } from "@/services/getFeedbackService/useGetFeedbackService.types.ts";
+import { STATUS_CONFIG, TStatus } from "@/utils/statusColorConfig.ts";
 import {
   Button,
   CopyButton,
@@ -26,14 +27,8 @@ export const columns: ColumnDef<IFeedback>[] = [
     header: "",
     size: 20,
     cell: ({ row }) => {
-      const status = row.getValue("status") as IFeedback["status"];
-
-      const dotClass =
-        status === "PENDING"
-          ? "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]"
-          : status === "RESOLVED"
-            ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"
-            : "bg-neutral-300";
+      const status = (row.getValue("status") as TStatus) || "NIL";
+      const { dotClass } = STATUS_CONFIG[status] || STATUS_CONFIG.NIL;
 
       return (
         <div className="flex items-center justify-center">
@@ -100,32 +95,19 @@ export const columns: ColumnDef<IFeedback>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as IFeedback["status"];
-
-      const config = {
-        PENDING: {
-          icon: Clock,
-          color: "text-amber-500",
-          label: "Pending",
-        },
-        RESOLVED: {
-          icon: CheckCircle2,
-          color: "text-emerald-500",
-          label: "Resolved",
-        },
-        DONE: {
-          icon: CheckCircle2,
-          color: "text-blue-500",
-          label: "Done",
-        },
-      };
-
-      const { icon: Icon, color, label } = config[status] || config.PENDING;
+      const status = (row.getValue("status") as TStatus) || "NIL";
+      const {
+        icon: Icon,
+        color,
+        label,
+      } = STATUS_CONFIG[status] || STATUS_CONFIG.NIL;
 
       return (
         <div className="flex items-center gap-1.5">
-          <Icon className={`size-3.5 ${color}`} />
-          <span className="text-xs text-muted-foreground">{label}</span>
+          <Icon className={`size-3.5 stroke-3 ${color}`} />
+          <span className="text-xs font-medium text-muted-foreground">
+            {label}
+          </span>
         </div>
       );
     },
