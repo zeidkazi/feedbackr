@@ -54,11 +54,11 @@ export const FeedbacksPage = () => {
       feedbackId: string;
     }) => {
       updateFeedbackStatusMutation.mutate({ status, feedbackId });
-      queryClientGlobal.removeQueries({
-        queryKey: [CACHE_KEYS.GET_FEEDBACKS, params.domainId],
+      queryClientGlobal.invalidateQueries({
+        queryKey: [CACHE_KEYS.GET_FEEDBACKS, params.domainId ?? ""],
       });
     },
-    [updateFeedbackStatusMutation.isPending],
+    [updateFeedbackStatusMutation],
   );
 
   const handleDelete = ({ feedbackId }: { feedbackId: string }) => {
@@ -136,13 +136,15 @@ export const FeedbacksPage = () => {
           cancelLabel="Cancel"
           variant="ghost"
           onConfirm={() => {
+            if (!selectedFeedbackId) return;
             deleteFeedbackMutation.mutate(
               { feedbackId: selectedFeedbackId },
               {
                 onSuccess: () => {
                   queryClientGlobal.invalidateQueries({
-                    queryKey: [CACHE_KEYS.GET_FEEDBACKS, params.domainId],
+                    queryKey: [CACHE_KEYS.GET_FEEDBACKS, params.domainId ?? ""],
                   });
+                  setSelectedFeedbackId(undefined);
                 },
               },
             );
