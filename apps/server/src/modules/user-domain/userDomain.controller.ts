@@ -1,8 +1,6 @@
 import { DomainSchema } from "@repo/common/schemas";
 import { Request, Response } from "express";
 import { UserDomainService } from "./userDomain.service.js";
-import { generateApiKey, hashFunction } from "@repo/utils/server";
-import { prisma } from "@/lib/prisma-orm/prisma.js";
 
 export const UserDomainController = {
   createDomain: async (req: Request, res: Response) => {
