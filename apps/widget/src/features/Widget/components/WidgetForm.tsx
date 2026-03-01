@@ -26,7 +26,12 @@ export function WidgetForm({ onClose }: { onClose: () => void }) {
           onClick={onClose}
           className="rounded-md p-1 transition-colors hover:bg-white/20"
         >
-          <X className="h-5 w-5" />
+          <X
+            className="h-5 w-5"
+            onClick={() => {
+              window.parent.postMessage({ type: "FEEDBACK_WIDGET_CLOSE" }, "*");
+            }}
+          />
         </button>
       </div>
 

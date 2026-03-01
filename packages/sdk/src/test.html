@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>SDK Test Page</h1>
+
+    <button onclick="throw new Error('Test crash')">Crash App</button>
+
+    <script src="http://localhost:3001/index.global.js"></script>
+    <script>
+      console.log("Before init:", window.feedback);
+      window.feedback.init({ clientId: "test123" });
+    </script>
+  </body>
+</html>

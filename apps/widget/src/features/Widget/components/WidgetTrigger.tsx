@@ -22,7 +22,12 @@ export function WidgetTrigger({ isOpen, onClick }: WidgetTriggerProps) {
       className="h-14 w-14 rounded-full shadow-xl transition-all hover:scale-105"
     >
       {isOpen ? (
-        <X className="h-6 w-6" />
+        <X
+          className="h-6 w-6"
+          onClick={() => {
+            window.parent.postMessage({ type: "FEEDBACK_WIDGET_CLOSE" }, "*");
+          }}
+        />
       ) : (
         <MessageSquare className="h-6 w-6" />
       )}

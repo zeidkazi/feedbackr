@@ -9,7 +9,7 @@ export function Widget() {
   const [isOpen, setIsOpen] = useState(false);
 
   return createPortal(
-    <div className="fixed bottom-4 right-4 z-9999 font-inter md:bottom-6 md:right-6">
+    <div className="fixed bottom-0 right-0 z-9999 font-inter">
       <AnimatePresence mode="wait">
         {isOpen ? (
           <main className="relative">
@@ -23,7 +23,10 @@ export function Widget() {
           <WidgetTrigger
             key="trigger"
             isOpen={isOpen}
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              setIsOpen(true);
+              window.parent.postMessage({ type: "FEEDBACK_WIDGET_OPEN" }, "*");
+            }}
           />
         )}
       </AnimatePresence>
