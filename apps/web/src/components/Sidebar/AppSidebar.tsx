@@ -191,12 +191,12 @@ export function AppSidebar() {
                       asChild
                       className={
                         isActive
-                          ? "bg-neutral-200 rounded-md text-neutral-600 hover:bg-neutral-300/70 hover:text-neutral-700 font-medium gap-1.5"
-                          : "hover:bg-neutral-300/50 text-sm gap-1.5 text-neutral-500"
+                          ? "text-[13px] bg-neutral-200 rounded-md text-neutral-600 hover:bg-neutral-300/70 hover:text-neutral-700 font-medium gap-1.5"
+                          : "hover:bg-neutral-300/50 text-[13px] gap-1.5 text-neutral-500"
                       }
                     >
                       <Link to={route.href}>
-                        <Icon className="size-4! mt-px" />
+                        <Icon className="size-4! -mt-px" />
                         <span>{route.name}</span>
                       </Link>
                     </SidebarMenuButton>
