@@ -6,6 +6,7 @@ export function createWidgetIframe(clientId: string) {
   iframe.src = `${WIDGET_URL}?clientId=${clientId}`;
 
   const styles = document.createElement("style");
+
   styles.innerHTML = `
     .defaultWidgetFrame {
       position: fixed;
