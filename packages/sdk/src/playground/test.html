@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>SDK Test Page</h1>
+
+    <button onclick="throw new Error('Test crash')">Crash App</button>
+
+    <script src="http://localhost:3001/index.global.js"></script>
+    <script>
+      // working.mail.com as host
+      window.feedback.init({ clientId: "pk_ohw54A1sI3zCifIcqS-lzw" });
+      console.log("Loaded", window.feedback);
+    </script>
+  </body>
+</html>

@@ -167,4 +167,34 @@ export const UserDomainService = {
       status: 200,
     };
   },
+
+  validateClientId: async ({
+    clientId,
+    hostname,
+  }: {
+    clientId: string;
+    hostname: string;
+  }) => {
+    if (!clientId) {
+      throw new AppError("Missing Client ID", 400, "NOT_FOUND");
+    }
+
+    const isLocalhost = hostname.includes("localhost");
+
+    const hashedclientId = hashFunction(clientId);
+
+    const domain = await prisma.domain.findFirst({
+      where: { clientId: hashedclientId, url: hostname },
+    });
+
+    if (!domain) {
+      throw new AppError("Invalid Client ID in service", 400);
+    }
+
+    return {
+      data: { domain },
+      message: "validated client id",
+      status: 200,
+    };
+  },
 };

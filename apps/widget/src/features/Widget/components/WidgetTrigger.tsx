@@ -1,6 +1,5 @@
 import { MessageSquare, X } from "lucide-react";
-import { Button } from "@repo/ui";
-import { easeInOut, motion } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface WidgetTriggerProps {
   isOpen: boolean;
@@ -8,24 +7,40 @@ interface WidgetTriggerProps {
 }
 
 export function WidgetTrigger({ isOpen, onClick }: WidgetTriggerProps) {
-  const MotionButton = motion(Button);
   return (
-    <MotionButton
-      layout
-      layoutId="trigger"
+    <motion.button
       onClick={onClick}
-      size="icon"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3, ease: easeInOut }}
-      className="h-14 w-14 rounded-full shadow-xl transition-all hover:scale-105"
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.94 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      aria-label={isOpen ? "Close feedback widget" : "Open feedback widget"}
+      className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
-      {isOpen ? (
-        <X className="h-6 w-6" />
-      ) : (
-        <MessageSquare className="h-6 w-6" />
-      )}
-    </MotionButton>
+      <AnimatePresence mode="wait" initial={false}>
+        {isOpen ? (
+          <motion.span
+            key="close"
+            initial={{ opacity: 0, rotate: -45, scale: 0.7 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 45, scale: 0.7 }}
+            transition={{ duration: 0.18 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <X className="h-5 w-5" />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="open"
+            initial={{ opacity: 0, rotate: 45, scale: 0.7 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: -45, scale: 0.7 }}
+            transition={{ duration: 0.18 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <MessageSquare className="h-5 w-5" />
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }

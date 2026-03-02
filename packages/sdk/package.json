@@ -1,0 +1,18 @@
+{
+  "name": "@repo/sdk",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup --watch",
+    "dev": "tsup --watch",
+    "serve": "cd ./src/playground && npx serve dist -l 3001",
+    "playground": "cp dist/index.global.js src/playground/index.global.js && npx serve ./src/playground -l 3001"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "tsup": "^8.5.0"
+  }
+}
