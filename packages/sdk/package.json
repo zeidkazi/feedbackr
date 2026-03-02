@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsup --watch",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "serve": "cd ./src/playground && npx serve dist -l 3001"
   },
   "keywords": [],
   "author": "",
