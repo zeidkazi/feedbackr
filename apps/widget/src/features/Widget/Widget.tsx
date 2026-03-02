@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import { AnimatePresence } from "framer-motion";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { widgetFormSchema, TWidgetFormPayload } from "@repo/common/schemas";
-import { ImageAnnotator } from "@/components/ImageAnnotator.tsx";
+import {
+  widgetFormSchema,
+  type TWidgetFormPayload,
+} from "@repo/common/schemas";
 import { WidgetForm } from "./components/WidgetForm.tsx";
 import { WidgetTrigger } from "./components/WidgetTrigger.tsx";
 
 export function Widget() {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isAnnotating, setIsAnnotating] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -21,19 +24,28 @@ export function Widget() {
   const imageFile = methods.watch("image");
 
   useEffect(() => {
-    if (imageFile) {
-      const url = URL.createObjectURL(imageFile);
-      setPreviewUrl(url);
-      return () => URL.revokeObjectURL(url);
-    } else {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!imageFile) {
       setPreviewUrl(null);
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(imageFile);
   }, [imageFile]);
 
-  const handleSaveAnnotation = (annotatedFile: File) => {
-    methods.setValue("image", annotatedFile, { shouldValidate: true });
+  const handleClose = () => {
+    setIsOpen(false);
     setIsAnnotating(false);
   };
+
+  if (!mounted) return null;
 
   return createPortal(
     <div
@@ -41,36 +53,31 @@ export function Widget() {
       className="fixed bottom-4 right-4 z-9999 font-inter md:bottom-6 md:right-6"
     >
       <FormProvider {...methods}>
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <main className="relative flex items-end gap-4">
-              <AnimatePresence>
-                {isAnnotating && previewUrl && (
-                  <ImageAnnotator
-                    key="annotator"
-                    imageUrl={previewUrl}
-                    onSave={handleSaveAnnotation}
-                    onCancel={() => setIsAnnotating(false)}
-                  />
-                )}
-              </AnimatePresence>
-
-              <div className="relative inline-block">
-                <WidgetForm
-                  key="form"
-                  onClose={() => setIsOpen(false)}
-                  onOpenAnnotator={() => setIsAnnotating(true)}
-                />
-              </div>
-            </main>
-          ) : (
-            <WidgetTrigger
-              key="trigger"
-              isOpen={isOpen}
-              onClick={() => setIsOpen(true)}
+        <AnimatePresence>
+          {isOpen && (
+            <WidgetForm
+              key="form"
+              isAnnotating={isAnnotating}
+              previewUrl={previewUrl}
+              onClose={handleClose}
+              onOpenAnnotator={() => setIsAnnotating(true)}
+              onCloseAnnotator={() => setIsAnnotating(false)}
+              onAnnotationSave={(file: File) => {
+                methods.setValue("image", file, { shouldValidate: true });
+                setIsAnnotating(false);
+              }}
             />
           )}
         </AnimatePresence>
+
+        <div
+          className={`mt-3 flex justify-end ${isOpen ? "hidden md:flex" : "flex"}`}
+        >
+          <WidgetTrigger
+            isOpen={isOpen}
+            onClick={() => setIsOpen((prev) => !prev)}
+          />
+        </div>
       </FormProvider>
     </div>,
     document.body,

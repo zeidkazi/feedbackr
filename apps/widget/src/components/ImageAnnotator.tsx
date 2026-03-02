@@ -1,10 +1,20 @@
+import { useRef, useState } from "react";
 import {
   ReactSketchCanvas,
   type ReactSketchCanvasRef,
 } from "react-sketch-canvas";
-import { useRef, useState } from "react";
-import { motion } from "framer-motion";
+import {
+  Pen,
+  Eraser,
+  Undo2,
+  Redo2,
+  Trash2,
+  Check,
+  Loader2,
+} from "lucide-react";
+
 import { Button } from "@repo/ui";
+import { cn } from "@repo/utils/client";
 
 interface ImageAnnotatorProps {
   imageUrl: string;
@@ -21,9 +31,9 @@ export const ImageAnnotator = ({
   const [eraseMode, setEraseMode] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleToggleEraser = () => {
-    setEraseMode(!eraseMode);
-    canvasRef.current?.eraseMode(!eraseMode);
+  const setErase = (val: boolean) => {
+    setEraseMode(val);
+    canvasRef.current?.eraseMode(val);
   };
 
   const handleSave = async () => {
@@ -33,11 +43,10 @@ export const ImageAnnotator = ({
       if (!dataUrl) return;
 
       const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], "annotated-screenshot.png", {
-        type: "image/png",
-      });
 
-      onSave(file);
+      onSave(
+        new File([blob], "annotated-screenshot.png", { type: "image/png" }),
+      );
     } catch (err) {
       console.error("Failed to save annotation", err);
     } finally {
@@ -46,74 +55,116 @@ export const ImageAnnotator = ({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="absolute right-[calc(100%+1rem)] bottom-0 flex flex-col rounded-xl border border-border bg-card shadow-2xl z-50 overflow-hidden"
-    >
-      <div className="flex items-center justify-between border-b border-border p-3 bg-muted/30">
-        <span className="font-medium text-sm">Annotate Screenshot</span>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button size="sm" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-muted/20 p-4">
+        <div className="relative mx-auto w-full max-w-5xl overflow-hidden rounded-xl border border-border/60 bg-white shadow-sm">
+          <img
+            src={imageUrl}
+            alt="spacer"
+            className="pointer-events-none w-full opacity-0"
+          />
+
+          <div className="absolute inset-0">
+            <ReactSketchCanvas
+              ref={canvasRef}
+              style={{ width: "100%", height: "100%" }}
+              backgroundImage={imageUrl}
+              preserveBackgroundImageAspectRatio="none"
+              exportWithBackgroundImage
+              strokeColor="#ef4444"
+              strokeWidth={4}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="w-[800px] h-[500px] bg-secondary flex items-center justify-center p-4">
-        <ReactSketchCanvas
-          ref={canvasRef}
-          preserveBackgroundImageAspectRatio=""
-          className="w-full h-full rounded-lg overflow-hidden object-contain"
-          backgroundImage={imageUrl}
-          exportWithBackgroundImage
-          strokeColor="#ef4444"
-          strokeWidth={4}
-        />
-      </div>
+      <div className="flex shrink-0 items-center justify-center gap-1.5 border-t border-border/60 px-4 py-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => setErase(false)}
+          className={cn(
+            "h-8 gap-1.5 px-2.5 text-xs font-medium transition-colors",
+            !eraseMode
+              ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
+              : "text-muted-foreground",
+          )}
+        >
+          <Pen className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Pen</span>
+        </Button>
 
-      <div className="border-t border-border p-3 bg-muted/30 flex justify-center gap-3">
         <Button
-          variant={!eraseMode ? "default" : "outline"}
+          type="button"
+          variant="ghost"
           size="sm"
-          onClick={handleToggleEraser}
+          onClick={() => setErase(true)}
+          className={cn(
+            "h-8 gap-1.5 px-2.5 text-xs font-medium transition-colors",
+            eraseMode
+              ? "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
+              : "text-muted-foreground",
+          )}
         >
-          Pen
+          <Eraser className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Eraser</span>
         </Button>
+
+        <div className="mx-1 h-5 w-px bg-border" />
+
         <Button
-          variant={eraseMode ? "default" : "outline"}
-          size="sm"
-          onClick={handleToggleEraser}
-        >
-          Eraser
-        </Button>
-        <Button
-          variant="outline"
+          type="button"
+          variant="ghost"
           size="sm"
           onClick={() => canvasRef.current?.undo()}
+          className="h-8 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground"
         >
-          Undo
+          <Undo2 className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Undo</span>
         </Button>
+
         <Button
-          variant="outline"
+          type="button"
+          variant="ghost"
           size="sm"
           onClick={() => canvasRef.current?.redo()}
+          className="h-8 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground"
         >
-          Redo
+          <Redo2 className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Redo</span>
         </Button>
+
+        <div className="mx-1 h-5 w-px bg-border" />
+
         <Button
-          variant="outline"
+          type="button"
+          variant="ghost"
           size="sm"
           onClick={() => canvasRef.current?.clearCanvas()}
+          className="h-8 gap-1.5 px-2.5 text-xs font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
-          Clear
+          <Trash2 className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Clear</span>
+        </Button>
+
+        <div className="mx-1 h-5 w-px bg-border" />
+
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleSave}
+          disabled={isSaving}
+          className="h-8 gap-1.5 rounded-lg px-3 text-xs"
+        >
+          {isSaving ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Check className="h-3.5 w-3.5" />
+          )}
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </div>
-    </motion.div>
+    </div>
   );
 };

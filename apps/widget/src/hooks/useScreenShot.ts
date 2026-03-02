@@ -30,47 +30,11 @@ export function useScreenshot() {
 
       if (!fullPageBlob) return null;
 
-      const img = new Image();
-      const url = URL.createObjectURL(fullPageBlob);
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = url;
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      const ctx = canvas.getContext("2d");
-
-      if (!ctx) throw new Error("Could not get canvas context");
-
-      ctx.drawImage(
-        img,
-        window.scrollX * dpr,
-        window.scrollY * dpr,
-        canvas.width,
-        canvas.height,
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      );
-
-      URL.revokeObjectURL(url);
-
-      const croppedBlob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, "image/png", 1.0),
-      );
-
-      if (!croppedBlob) return null;
-
-      return new File([croppedBlob], "feedback-viewport.png", {
+      return new File([fullPageBlob], "feedback-fullpage.png", {
         type: "image/png",
       });
     } catch (error) {
-      console.error("Failed to capture viewport:", error);
+      console.error("Failed to capture full page:", error);
       return null;
     } finally {
       setIsCapturing(false);

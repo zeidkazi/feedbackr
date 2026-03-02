@@ -2,9 +2,7 @@ import { Widget } from "./features/Widget/Widget.tsx";
 
 const App = () => {
   return (
-    // Added a massive min-height (300vh) to force scrolling
     <div className="min-h-[300vh] w-full bg-slate-50 font-sans text-slate-900">
-      {/* Added a sticky header. The old hack would have broken this! */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200 p-4 text-center font-bold shadow-sm">
         I am a sticky nav. I should always be at the top of the screenshot!
       </div>
