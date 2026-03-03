@@ -108,7 +108,7 @@ export const UserDomainController = {
     let hostname = new URL(origin).hostname;
 
     if (hostname.includes("localhost")) {
-      hostname = "working.mail.com";
+      hostname = "uploadThing.com";
       /**
        * why i did this bcoz in our database , there is no record for localhost in domains table.. so our database checks will get failed.
        *
