@@ -1,4 +1,5 @@
 import { destroyListener, registerListener } from "./events";
+import { handleTakeScreenshot } from "./handlers";
 import { createWidgetIframe } from "./iframe";
 
 export function injectWidget(clientId: string) {
@@ -21,6 +22,7 @@ export function injectWidget(clientId: string) {
     iframe.classList.remove("openWidgetFrame");
     iframe.classList.add("closeWidgetFrame");
   });
+  registerListener("TAKE_SCREENSHOT", handleTakeScreenshot);
 }
 
 export function destroyWidget() {

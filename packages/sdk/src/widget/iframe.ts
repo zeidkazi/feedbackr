@@ -1,9 +1,12 @@
+export const iframeId = "__feedback_iframe";
+
 export function createWidgetIframe(clientId: string) {
   const WIDGET_URL = "http://localhost:5174";
   const iframe = document.createElement("iframe");
 
-  iframe.id = "__feedback_iframe";
+  iframe.id = iframeId;
   iframe.src = `${WIDGET_URL}?clientId=${clientId}`;
+  iframe.allowFullscreen = true;
 
   const styles = document.createElement("style");
 
@@ -14,7 +17,6 @@ export function createWidgetIframe(clientId: string) {
       right: 20px;
       width: 65px;
       height: 65px;
-      border: none;
       box-shadow: none;
 
       display: flex;

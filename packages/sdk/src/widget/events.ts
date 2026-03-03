@@ -1,9 +1,13 @@
 export const FEEDBACK_EVENT = [
   "FEEDBACK_WIDGET_OPEN",
   "FEEDBACK_WIDGET_CLOSE",
+  "TAKE_SCREENSHOT",
 ] as const;
 
+export const SDK_EVENTS = ["SCREENSHOT_SUCCESS", "SCREENSHOT_ERROR"] as const;
+
 type TFeedbackEvent = (typeof FEEDBACK_EVENT)[number];
+export type TSdkEvent = (typeof SDK_EVENTS)[number];
 
 let registeredEvents = new Map<
   TFeedbackEvent,
@@ -12,14 +16,14 @@ let registeredEvents = new Map<
 
 export function registerListener(
   event: TFeedbackEvent,
-  onMessage: (...args: any) => void,
+  onMessage: (data: any) => void,
 ) {
   if (registeredEvents.has(event)) return;
 
   const handler = (e: MessageEvent) => {
     if (e.origin !== "http://localhost:5174") return;
     if (e.data?.type === event) {
-      onMessage();
+      onMessage(e.data);
       return;
     }
   };
