@@ -19,11 +19,11 @@ const FeedBackController = {
       const payload = req?.body;
       const initialPayload = {
         ...payload,
-        clientContext: payload.clientContext
-          ? JSON.parse(payload.clientContext)
+        clientContext: payload?.clientContext
+          ? JSON.parse(payload?.clientContext)
           : undefined,
-        debugContext: payload.debugContext
-          ? JSON.parse(payload.debugContext)
+        debugContext: payload?.debugContext
+          ? JSON.parse(payload?.debugContext)
           : undefined,
         images: undefined,
       };
