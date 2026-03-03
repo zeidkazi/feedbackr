@@ -17,6 +17,7 @@ export function createWidgetIframe(clientId: string) {
       right: 20px;
       width: 65px;
       height: 65px;
+      border: none;
       box-shadow: none;
 
       display: flex;

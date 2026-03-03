@@ -18,6 +18,7 @@ import { type TWidgetFormPayload } from "@repo/common/schemas";
 import { cn } from "@repo/utils/client";
 import { ImageAnnotator } from "@/components/ImageAnnotator.tsx";
 import { useScreenshot } from "@/hooks/useScreenShot.ts";
+import { submitFeedback } from "@/utils/widget.handler.utils.ts";
 
 interface WidgetFormProps {
   isAnnotating: boolean;
@@ -75,16 +76,21 @@ export function WidgetForm({
 
   const onSubmit = async (data: TWidgetFormPayload) => {
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    console.log("SUBMIT:", data);
 
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    try {
+      await submitFeedback(data)?.then(() => {
+        setIsSubmitting(false);
+        setIsSuccess(true);
 
-    setTimeout(() => {
-      reset();
-      onClose();
-    }, 2500);
+        setTimeout(() => {
+          reset();
+          onClose();
+        }, 2500);
+      });
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Submission Error:", error);
+    }
   };
 
   const cardClass = cn(
