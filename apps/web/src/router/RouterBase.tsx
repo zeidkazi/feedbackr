@@ -3,7 +3,7 @@ import Dashboard from "@/pages/Dashboard/Dashboard.tsx";
 import { IndividualFeedbackPage } from "@/pages/Feedback/IndividualFeedbackPage.tsx";
 import { FeedbacksPage } from "@/pages/Feedbacks/FeedbacksPage.tsx";
 import { LoginPage } from "@/pages/LoginPage.tsx";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { AuthCallbackPage } from "@/pages/AuthCallbackPage.tsx";
 import { OnboardingCreateDomainPage } from "@/pages/OnboardingCreateDomainPage.tsx";
@@ -14,6 +14,10 @@ export const Router = createBrowserRouter([
     path: "/",
     element: <PageLayout />,
     children: [
+      {
+        index: true,
+        element: <Navigate to={"/login"} replace />,
+      },
       {
         path: "/login",
         element: <LoginPage />,
