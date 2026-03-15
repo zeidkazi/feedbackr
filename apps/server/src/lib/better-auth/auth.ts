@@ -26,4 +26,9 @@ export const auth = betterAuth({
   account: {
     skipStateCookieCheck: true, // for vercel.app only ( state mismatched error )
   },
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "none",
+    },
+  },
 });
