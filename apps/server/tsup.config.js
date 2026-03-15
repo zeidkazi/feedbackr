@@ -7,6 +7,6 @@ export default defineConfig((options) => ({
   target: "es2020",
   platform: "node",
   shims: true,
-  external: ["multer"],
+  external: ["multer", "@prisma/client"],
   ...options,
 }));
