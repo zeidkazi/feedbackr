@@ -7,5 +7,5 @@ export default defineConfig({
   minify: false,
   sourcemap: true,
   clean: true,
-  outDir: "dist",
+  outDir: "build_dist",
 });
